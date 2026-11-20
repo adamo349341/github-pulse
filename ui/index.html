@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>git-pulse web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen p-8">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-cyan-400">⚡ git-pulse <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 ml-2">Web App</span></h1>
+        <p class="text-sm text-slate-400">Automated Git & GitHub workflow assistant</p>
+      </div>
+      <div id="gh-profile" class="hidden flex items-center space-x-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl">
+        <div id="gh-user" class="text-xs font-bold text-slate-200">...</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><span class="text-xs text-slate-500">Branch</span><div id="branch" class="text-lg font-bold text-slate-200">-</div></div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><span class="text-xs text-slate-500">Staged</span><div id="staged" class="text-lg font-bold text-yellow-400">-</div></div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><span class="text-xs text-slate-500">Commits</span><div id="commits" class="text-lg font-bold text-emerald-400">-</div></div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><span class="text-xs text-slate-500">Mode</span><div class="text-lg font-bold text-cyan-400">🛡️ Active</div></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-3">
+        <h2 class="text-lg font-semibold text-slate-200 mb-2">Actions</h2>
+        <button onclick="api('commit')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-left px-4 py-3 rounded-lg text-sm font-medium">📝 Auto-Commit Staged</button>
+        <button onclick="api('push')" class="w-full bg-slate-800 hover:bg-slate-700 text-left px-4 py-3 rounded-lg text-sm font-medium">🚀 Safety Check & Push</button>
+        <button onclick="api('pr')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-left px-4 py-3 rounded-lg text-sm font-medium">✨ Open GitHub PR</button>
+      </div>
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <pre id="console" class="font-mono text-xs text-emerald-400 max-h-64 overflow-y-auto">git-pulse web app ready.</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadStatus() {
+      const res = await fetch('/api/status').then(r => r.json());
+      if (res.success) {
+        document.getElementById('branch').innerText = res.branch;
+        document.getElementById('staged').innerText = res.stagedCount;
+        document.getElementById('commits').innerText = res.stats?.recentCommits || '0';
+        if (res.github) {
+          document.getElementById('gh-profile').classList.remove('hidden');
+          document.getElementById('gh-user').innerText = '@' + res.github.login;
+        }
+      }
+    }
+    async function api(cmd) {
+      document.getElementById('console').innerText += '\\n> ' + cmd;
+      const res = await fetch('/api/' + cmd, { method: 'POST' }).then(r => r.json());
+      document.getElementById('console').innerText += '\\n' + JSON.stringify(res, null, 2);
+      loadStatus();
+    }
+    loadStatus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "git-pulse",
+  "version": "1.0.0",
+  "description": "Automated Git & GitHub workflow assistant with a GUI.",
+  "type": "module",
+  "bin": {
+    "git-pulse": "src/index.js"
+  },
+  "scripts": {
+    "dev": "node src/index.js",
+    "app": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.5",
+    "@tauri-apps/cli": "^2.12.6",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "express": "^4.19.2",
+    "octokit": "^4.0.2",
+    "ora": "^8.0.1",
+    "simple-git": "^3.19.1"
+  }
+}
